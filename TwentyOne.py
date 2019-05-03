@@ -1,13 +1,14 @@
 import random
 
 class Card:
-    Faces = ['zero', 'ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king']
-    Suits = ['clubs', 'diamonds', 'hearts', 'spades']
+    Faces = ['Zero', 'Ace', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King']
+    Suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades']
 
     def __init__(self, suit = 0, face = 0):
         self.face = face
         self.suit = suit
 
+    #set and get methods are not necessarily 
     def setFace(self, face):
         self.face = face
         
@@ -20,15 +21,12 @@ class Card:
     def getSuit(self):
         return self.suit
 
-    def equals(self, card2):
-        if self.getSuit() == card2.getSuit() :
-            if self.getFace() == card2.getFace():
-               return 1
     def value(self):
         if self.face > 10:
             return 10
         elif self.face == 1:
             one = int(input("What do you want this value be: (1 or 11)"))
+            print(self.Faces[self.face] + ' of ' + self.Suits[self.suit], one)
             return one
         else:
             return self.face
@@ -61,6 +59,8 @@ class Deck:
         for i in range(num_cards):
             j = random.randrange(i, num_cards)
             self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
+
+    #This mehtod is not necessarily        
     def remove(self, card):
         if card in self.cards:
             self.cards.remove(card)
@@ -74,49 +74,76 @@ class Deck:
         return len(self.cards)
 
 
-class TwentyOne:
-    def playerTotal(self):
-        return 
+class Hand:
+    
+    def __init__(self, deck = Deck()):
+        self.deck = deck
+        self.hand = []
+        
+    def addCard(self):
+        self.deck.shuffle()
+        self.hand.append(self.deck.pop())
+        
+    def Total(self):
+        total = 0
+        for items in self.hand:
+            total += items.value()
+        return total
+    def hit(self):
+        while True: 
+            yes = str(input("Do you want to hit?"))
+            if yes != "y" and yes != "Y":
+                break
+            player.addCard()
+            print(player.printlast())
+            print("Your new total is:", player.Total())
+            print("Number of cards left:",deck.cardcount())
 
+        
+    def print(self):
+        for i in range(len(self.hand)):
+            print(self.hand[i], self.hand[i].value())
 
+    def printlast(self):
+        print(self.hand[len(self.hand)-1], self.hand[len(self.hand)-1].value())
+    
 #Main
 
 #Creating the object of decks 
 deck = Deck()
-deck.shuffle()
 
 #Creating the dealer's hand and Player's hand with 2 cards dealed initially 
-comp = []
-compTotal = 0
-player = []
-playerTotal = 0 
+comp = Hand(deck)
+player = Hand(deck)
+
 for i in range(2):
-    comp.append(deck.pop())
-    compTotal += comp[i].value()
-    player.append(deck.pop())
-    playerTotal += player[i].value()
+    comp.addCard()
+    player.addCard()
     deck.shuffle()
+
 #printing how many cards left 
 print("Number of cards left:",deck.cardcount())
-
+print('computer:')
+print(comp.print())
+print('player:')
+print(player.print())
+player.hit()
 #printing out the total of both dealer's and player's hand
-print("Computer total:", compTotal)
-print("Your total is:", playerTotal)
+print("Computer total:", comp.Total())
+print("Your total is:", player.Total())
 
 #Asking if the player wants to hit
+"""
 while True: 
     hit = str(input("Do you want to hit?"))
     if hit != "y" and hit != "Y":
          break
-    player.append(deck.pop())
-    print(player[len(player)-1], player[len(player)-1].value())
-    playerTotal += player[len(player)-1].value()
-    print("Your total is:", playerTotal)
+    player.addCard()
+    print(player.printlast())
+    print("Your new total is:", player.Total())
     deck.shuffle()
-    
-
-
-
+    print("Number of cards left:",deck.cardcount())
+"""  
 #Winning condition 
 
 """
