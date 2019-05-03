@@ -24,8 +24,18 @@ class Card:
         if self.getSuit() == card2.getSuit() :
             if self.getFace() == card2.getFace():
                return 1
+    def value(self):
+        if self.face > 10:
+            return 10
+        elif self.face == 1:
+            one = int(input("What do you want this value be: (1 or 11)"))
+            return one
+        else:
+            return self.face
+
     def __str__(self):
         return (self.Faces[self.face] + ' of ' + self.Suits[self.suit])
+
 
     
 
@@ -63,26 +73,73 @@ class Deck:
     def cardcount(self):
         return len(self.cards)
 
-    
-card1 = Card(1, 11)
-print (card1)
+
+class TwentyOne:
+    def playerTotal(self):
+        return 
 
 
+#Main
 
+#Creating the object of decks 
 deck = Deck()
 deck.shuffle()
 
+#Creating the dealer's hand and Player's hand with 2 cards dealed initially 
 comp = []
+compTotal = 0
 player = []
-comp.append(deck.pop())
+playerTotal = 0 
+for i in range(2):
+    comp.append(deck.pop())
+    compTotal += comp[i].value()
+    player.append(deck.pop())
+    playerTotal += player[i].value()
+    deck.shuffle()
+#printing how many cards left 
+print("Number of cards left:",deck.cardcount())
+
+#printing out the total of both dealer's and player's hand
+print("Computer total:", compTotal)
+print("Your total is:", playerTotal)
+
+#Asking if the player wants to hit
+while True: 
+    hit = str(input("Do you want to hit?"))
+    if hit != "y" and hit != "Y":
+         break
+    player.append(deck.pop())
+    print(player[len(player)-1], player[len(player)-1].value())
+    playerTotal += player[len(player)-1].value()
+    print("Your total is:", playerTotal)
+    deck.shuffle()
+    
+
+
+
+#Winning condition 
+
+"""
+player.append(deck.pop())
+
 print(deck.cardcount())
+deck.shuffle()
+
+comp.append(deck.pop())
+
+print(deck.cardcount())
+deck.shuffle()
 
 player.append(deck.pop())
 
-
-
 print(deck.cardcount())
-#print (deck)
+deck.shuffle()
+for x in range(len(comp)):
+        
+    print(comp[x], comp[x].value())
+"""
+
+
 
 
 
