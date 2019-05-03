@@ -101,8 +101,11 @@ class Hand:
 
         
     def print(self):
-        for i in range(len(self.hand)):
+        print(len(self.hand))#[three of diamdn 3, adsfjdas 3, null]
+        
+        for i in range(0,len(self.hand)):
             print(self.hand[i], self.hand[i].value())
+        return '\n'
 
     def printlast(self):
         print(self.hand[len(self.hand)-1], self.hand[len(self.hand)-1].value())
@@ -125,12 +128,16 @@ for i in range(2):
 print("Number of cards left:",deck.cardcount())
 print('computer:')
 print(comp.print())
+
 print('player:')
 print(player.print())
-player.hit()
+
+
 #printing out the total of both dealer's and player's hand
 print("Computer total:", comp.Total())
 print("Your total is:", player.Total())
+
+player.hit()
 
 #Asking if the player wants to hit
 """
