@@ -1,79 +1,22 @@
 import discord
 import random
+import TwentyOne as TO
 
-class Card:
-    Faces = ['zero', 'ace', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'jack', 'queen', 'king']
-    Suits = ['clubs', 'diamonds', 'hearts', 'spades']
 
-    def __init__(self, suit = 0, face = 0):
-        self.face = face
-        self.suit = suit
-
-    def setFace(self, face):
-        self.face = face
-        
-    def setSuit(self, suit):
-        self.suit = suit
-        
-    def getFace(self):
-        return self.face
-    
-    def getSuit(self):
-        return self.suit
-
-    def equals(self, card2):
-        if self.getSuit() == card2.getSuit() :
-            if self.getFace() == card2.getFace():
-               return 1
-    def __str__(self):
-        return (self.Faces[self.face] + ' of ' + self.Suits[self.suit])
-
-    
-
-class Deck:
-    def __init__(self):
-        self.cards = []
-        for suit in range(4):
-            for rank in range(1, 14):
-                self.cards.append(Card(suit, rank))
-    
-    def print_deck(self):
-        for card in self.cards:
-            print (card)
-
-    def __str__(self):
-        s = ""
-        for i in range(len(self.cards)):
-            s = s + str(self.cards[i]) + "\n"
-        return s
-
-    def shuffle(self):
-        num_cards = len(self.cards)
-        for i in range(num_cards):
-            j = random.randrange(i, num_cards)
-            self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
-    def remove(self, card):
-        if card in self.cards:
-            self.cards.remove(card)
-            return True
-        else:
-            return False
-    def pop(self):
-        return self.cards.pop()
-
-    def cardcount(self):
-        return len(self.cards)
-        
-            
 
 client = discord.Client()
 
+deck = TO.Deck()
+player = TO.Hand(deck)
+dealer = TO.Hand(deck)
+
+
 @client.event
 async def on_message(message):
-    #id = client.get_guild(573036626570117121)
+    id = client.get_guild(573036626570117121)
     channels = ["commands"]
-    game = {'games'}
-    print(message.content)
+    game = {'blackjack'}
+    #print(message.content)
         
     if str(message.channel) in channels:
         if message.content =='!help':
@@ -92,39 +35,61 @@ async def on_message(message):
 
         
     if str(message.channel) in game:
-        deck = Deck()
-
         if message.content == '!help':
-            await message.channel.send('Welcome to TwentyOne Game!!!\nThis is how you play this game.\n!start'.format(message))
-            
+            await message.channel.send('!deal: To start the game.\n!reset: To reset the game.\n!stop: To exit the game.\n')
         elif message.content == '!start':
-            await message.channel.send('The deck has created!!\nType !shuffle to shuffle the card'.format(message))
-            
-        elif message.content == '!shuffle':
-            await message.channel.send('The deck has been shuffled\nNow Type !deal to deal the card'.format(message))
+            await message.channel.send('Welcome to TwentyOne Game!!!\nType \'!deal\' to start playing!\nType \'resest\' to Reset.\n\n')
             
         elif message.content == '!deal':
-            deck.shuffle()
-            await message.channel.send('This is your card\n'.format(message))
-            await message.channel.send(deck.pop())
+            await message.channel.send('Now is dealing the cards to dealer and {0.author.mention}'.format(message))
+            player.delete()
+            dealer.delete()
+            print(deck.cardcount())
+            for i in range(2):
+                player.addCard()
+                dealer.addCard()
+
+                     
+            await message.channel.send('The Dealer has:\n' + dealer.printlast())
+            await message.channel.send('You have:\n' + player.print())
+            await message.channel.send('Do you want to [h]it, [s]tand, or [q]uit:')
+
+            
+        elif message.content == 'h':
+            player.hit()
+            while dealer.Total() < 17:
+                  dealer.hit()
+            await message.channel.send(player.compare(dealer))
+            await message.channel.send("Enter !deal to start again")
+            deck.build()
+                        
+        elif message.content == 's':
+            while dealer.Total() < 17:
+                dealer.hit()
+            await message.channel.send(player.compare(dealer))
+            await message.channel.send("Enter !deal to start again")
+            deck.build()
             
             
-                
-        elif message.content == '!cardleft':
+        elif message.content == 'q':
+            await message.channel.send("Enter !deal to start again")
+            deck.build()
+
+        elif message.content == 'reset':
+            await message.channel.send("Type !deal to start playing!")
+            deck.build()
+
+        elif message.content == '!stop':
+            await message.channel.send("Now Exiting the game.")
+
+
+
+
+
             
-            await message.channel.send('# of cards left\n'.format(message))
-            await message.channel.send(deck.cardcount())
 
+        
+                       
+            
 
-
-
-
-
-
-
-
-
-
-
-      
 client.run('NTczMDM2Nzc2NjMzOTI1NjMz.XMlBNA.AacK0FbxkIJ84gIYSa3tloF__40')

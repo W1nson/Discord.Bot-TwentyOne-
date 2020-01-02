@@ -14,23 +14,18 @@ class Card:
         
     def setSuit(self, suit):
         self.suit = suit
-        
+
     def getFace(self):
         return self.face
     
     def getSuit(self):
         return self.suit
-
-    def value(self):
+        
+    def getValue(self):
         if self.face > 10:
             return 10
-        elif self.face == 1:
-            one = int(input("What do you want this value be: (1 or 11)"))
-            print(self.Faces[self.face] + ' of ' + self.Suits[self.suit], one)
-            return one
-        else:
-            return self.face
-
+        return self.face
+    
     def __str__(self):
         return (self.Faces[self.face] + ' of ' + self.Suits[self.suit])
 
@@ -38,145 +33,157 @@ class Card:
     
 
 class Deck:
+    #creates a deck of 52 cards 
     def __init__(self):
         self.cards = []
         for suit in range(4):
             for rank in range(1, 14):
                 self.cards.append(Card(suit, rank))
-    
+                
+    #prints out 52 cards 
     def print_deck(self):
         for card in self.cards:
             print (card)
-
-    def __str__(self):
-        s = ""
-        for i in range(len(self.cards)):
-            s = s + str(self.cards[i]) + "\n"
-        return s
-
+   
+    #shuffles the deck into random order
     def shuffle(self):
         num_cards = len(self.cards)
         for i in range(num_cards):
             j = random.randrange(i, num_cards)
             self.cards[i], self.cards[j] = self.cards[j], self.cards[i]
 
-    #This mehtod is not necessarily        
-    def remove(self, card):
-        if card in self.cards:
-            self.cards.remove(card)
-            return True
-        else:
-            return False
+    #removes all card from the deck 
+    def build(self):
+        self.cards = []
+        for suit in range(4):
+            for rank in range(1, 14):
+                self.cards.append(Card(suit, rank))
+        
+    #removes the card and return the card 
     def pop(self):
         return self.cards.pop()
-    
+
+    #returns # of cards left in the deck
     def cardcount(self):
         return len(self.cards)
 
+    #turn it to string
+    def __str__(self):
+        s = ""
+        for i in range(len(self.cards)):
+            s = s + str(self.cards[i]) + "\n"
+        return s
 
 class Hand:
-    
+
+    #initialize the hand with the deck 
     def __init__(self, deck = Deck()):
         self.deck = deck
         self.hand = []
-        
+
+    #adds a card from the deck to the hand
     def addCard(self):
         self.deck.shuffle()
         self.hand.append(self.deck.pop())
-        
+
+    #calculates the total value of on the hand
     def Total(self):
         total = 0
-        for items in self.hand:
-            total += items.value()
+        for card in self.hand:
+            if card.face > 10:
+                total+= 10
+            elif card == 1:
+                if total >= 11:
+                    total+= 1
+                else:
+                    total+= 11
+            else:
+                total+= card.getValue()
         return total
-    def hit(self):
-        while True: 
-            yes = str(input("Do you want to hit?"))
-            if yes != "y" and yes != "Y":
-                break
-            player.addCard()
-            print(player.printlast())
-            print("Your new total is:", player.Total())
-            print("Number of cards left:",deck.cardcount())
-
-        
-    def print(self):
-        print(len(self.hand))#[three of diamdn 3, adsfjdas 3, null]
-        
-        for i in range(0,len(self.hand)):
-            print(self.hand[i], self.hand[i].value())
-        return '\n'
-
-    def printlast(self):
-        print(self.hand[len(self.hand)-1], self.hand[len(self.hand)-1].value())
     
-#Main
+    #This method is asking the user to hit if they want to add more cards 
+    def hit(self):
+            self.addCard()
 
-#Creating the object of decks 
-deck = Deck()
+            
+    #prints out cards in hands and the total value
+    def print(self):
+        string = ""
+        for i in range(len(self.hand)):
+            string += str(self.hand[i])+ " " + str(self.hand[i].getValue()) + "\n"
+        string = string + str(self.Total()) + "\n"
+        return string
 
-#Creating the dealer's hand and Player's hand with 2 cards dealed initially 
-comp = Hand(deck)
-player = Hand(deck)
+    #deletes the whole hand
+    def delete(self):
+        self.hand = []
+    
+    
+    #prints out the last card of the hand
+    def printlast(self):
+        last = str(self.hand[len(self.hand)-1]) +" " + str(self.hand[len(self.hand)-1].getValue()) + "\n"
+        return last
 
-for i in range(2):
-    comp.addCard()
-    player.addCard()
-    deck.shuffle()
-
-#printing how many cards left 
-print("Number of cards left:",deck.cardcount())
-print('computer:')
-print(comp.print())
-
-print('player:')
-print(player.print())
-
-
-#printing out the total of both dealer's and player's hand
-print("Computer total:", comp.Total())
-print("Your total is:", player.Total())
-
-player.hit()
-
-#Asking if the player wants to hit
-"""
-while True: 
-    hit = str(input("Do you want to hit?"))
-    if hit != "y" and hit != "Y":
-         break
-    player.addCard()
-    print(player.printlast())
-    print("Your new total is:", player.Total())
-    deck.shuffle()
-    print("Number of cards left:",deck.cardcount())
-"""  
-#Winning condition 
-
-"""
-player.append(deck.pop())
-
-print(deck.cardcount())
-deck.shuffle()
-
-comp.append(deck.pop())
-
-print(deck.cardcount())
-deck.shuffle()
-
-player.append(deck.pop())
-
-print(deck.cardcount())
-deck.shuffle()
-for x in range(len(comp)):
+    def compare(self, hand):
+        result = "YOU: \n" + self.print() + "\nDealer:\n" + hand.print()
         
-    print(comp[x], comp[x].value())
+        if self.Total() == 21:
+            result += "\nCongratulations! You got a Blackjack!\n"    	
+        elif hand.Total() == 21:		
+            result += "\nSorry, you lose. The dealer got a blackjack.\n"
+        elif self.Total() > 21:
+            result += "\nSorry. You busted. You lose.\n"
+        elif hand.Total() > 21:			   
+            result += "\nDealer busts. You win!\n"
+        elif self.Total() < hand.Total():
+            result += "\nSorry. Your score isn't higher than the dealer. You lose.\n"
+        elif self.Total() > hand.Total():			   
+            result += "\nCongratulations. Your score is higher than the dealer. You win\n"
+        return result 
+#Main
 """
+def main():
+    while True:
+        choice = 0
+        deck = Deck()
+        player = Hand(deck)
+        dealer = Hand(deck)
+        
+        for i in range(2):
+            player.addCard()
+            dealer.addCard()
+
+        while choice != "q":
+            print("The Dealer has:")
+            dealer.printlast()
+            print()
+            print("You have:")
+            player.print()
+            print()
+            choice = input("Do you want to [H]it, [S]tand, or [Q]uit: ").lower()
+            if choice == "h":
+                player.hit()
+                while dealer.Total() < 17:
+                    dealer.hit()
+                player.compare(dealer)
+                break
+            elif choice == "s":
+                while dealer.Total() < 17:
+                    dealer.hit()
+                player.compare(dealer)
+                break
+            elif choice == "q":
+                break 
+        again = input("Do you want to play again? (Y/N) : ").lower()
+        if again == 'n':
+            break
 
 
+if __name__== "__main__":
+    main()
 
 
-
+"""
 
 
                        
