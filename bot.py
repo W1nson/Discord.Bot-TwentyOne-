@@ -57,12 +57,15 @@ async def on_message(message):
             
         elif message.content == 'h':
             player.hit()
-            while dealer.Total() < 17:
+            await message.channel.send(player.print())
+            await message.channel.send('Do you want to [h]it, [s]tand, or [q]uit:')
+
+            '''while dealer.Total() < 17:
                   dealer.hit()
-            await message.channel.send(player.compare(dealer))
-            await message.channel.send("Enter !deal to start again")
-            deck.build()
-                        
+            #await message.channel.send(player.compare(dealer))
+            #await message.channel.send("Enter !deal to start again")
+            #deck.build()
+                '''
         elif message.content == 's':
             while dealer.Total() < 17:
                 dealer.hit()
