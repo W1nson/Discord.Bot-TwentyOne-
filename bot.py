@@ -13,7 +13,7 @@ dealer = TO.Hand(deck)
 
 @client.event
 async def on_message(message):
-    id = client.get_guild(573036626570117121)
+    id = client.get_guild(****************)
     channels = ["commands"]
     game = {'blackjack'}
     #print(message.content)
